@@ -15,13 +15,20 @@ public class GewichtenCrud {
 
     public GewichtenCrud() {
         final Morphia morphia = new Morphia();
+        System.out.println("connect to mongo");
         morphia.mapPackage("org.mongodb.morphia.example");
-        String mongoDbPortProperty = System.getProperties().getProperty("mongoDbPort");
-        if (mongoDbPortProperty != null) {
-            datastore = morphia.createDatastore(new MongoClient("localhost", Integer.parseInt(mongoDbPortProperty)), "morphia_example1");
+        String mongoDbPort = System.getProperties().getProperty("mongoDbPort");
+        String mongoDbHostname = System.getProperties().getProperty("mongoDbHost");
+        String host = mongoDbHostname == null ? "localhost" : mongoDbHostname;
+        System.out.println("host:" + host);
+        System.out.println("mongoDbPort:" + mongoDbPort == null ? "default" : mongoDbPort);
+        MongoClient mongoClient;
+        if (mongoDbPort != null) {
+            mongoClient = new MongoClient(host, Integer.parseInt(mongoDbPort));
         } else {
-            datastore = morphia.createDatastore(new MongoClient(), "morphia_example1");
+            mongoClient = new MongoClient(host);
         }
+        datastore = morphia.createDatastore(mongoClient, "gewichten");
 
         datastore.ensureIndexes();
     }
